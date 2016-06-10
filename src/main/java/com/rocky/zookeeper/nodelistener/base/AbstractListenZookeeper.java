@@ -8,13 +8,14 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 /**
  * Created by liluoqi on 16/6/10.
  */
-public abstract class AbstractListenZookeeper implements NodeCacheListener {
+public abstract class AbstractListenZookeeper implements NodeCacheListener{
 
     private NodeCache nodeCache;
 
     private CuratorFramework curatorFramework;
     private String path;
     private boolean isCompressed;
+    private NodeCacheListener nodeCacheListener;
 
     /**
      * 创建即时记录当前值的NodeCache
@@ -31,8 +32,12 @@ public abstract class AbstractListenZookeeper implements NodeCacheListener {
         return this;
     }
 
-    public AbstractListenZookeeper addNodeCacheListener(NodeCacheListener nodeCacheListener) {
-        this.nodeCache.getListenable().addListener(nodeCacheListener);
+    public AbstractListenZookeeper useCustomListener(NodeCacheListener nodeCacheListener) {
+        if (nodeCacheListener != null) {
+            this.nodeCacheListener = nodeCacheListener;
+            this.nodeCache.getListenable().removeListener(this);
+            this.nodeCache.getListenable().addListener(nodeCacheListener);
+        }
         return this;
     }
 

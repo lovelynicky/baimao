@@ -1,10 +1,9 @@
 package main.java;
 
 import com.rocky.zookeeper.ZookeeperClientSupplier;
+import com.rocky.zookeeper.nodelistener.ListenNode;
 import main.java.Base.AbstractSpring4TransactionalJunitTest;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.apache.zookeeper.CreateMode;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import static com.rocky.utils.EncodeUtils.UTF8;
 
 /**
  * Created by liluoqi on 16/6/9.
+ * zkClient curator test class
  */
 public class zkClientTest extends AbstractSpring4TransactionalJunitTest {
 
@@ -28,19 +28,23 @@ public class zkClientTest extends AbstractSpring4TransactionalJunitTest {
     public void zookeeperClientTest() {
         try {
             CuratorFramework curatorFramework = zookeeperClientSupplier.getZookeeperClient(HOST, PORT);
-            curatorFramework.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT)
-                    .forPath(path, "".getBytes(UTF8));
-            final NodeCache nodeCache = new NodeCache(curatorFramework, path, false);
-            nodeCache.start(true);
-            nodeCache.getListenable().addListener(new NodeCacheListener() {
-                public void nodeChanged() throws Exception {
-                    System.out.println("node data update,new data:" + new String(nodeCache.getCurrentData().getData(), UTF8));
-                }
-            });
-            curatorFramework.setData().forPath(path,"hello world".getBytes(UTF8));
-            Thread.sleep(1000);
             curatorFramework.delete().deletingChildrenIfNeeded().forPath(path);
-            Thread.sleep(2000);
+            curatorFramework.create().creatingParentsIfNeeded().withMode(CreateMode.PERSISTENT)
+                    .forPath(path, "hello world".getBytes(UTF8));
+            Thread.sleep(1000);
+            new ListenNode().nodeCache(curatorFramework, path, false).start(true);
+            curatorFramework.setData().forPath(path, "baimao".getBytes(UTF8));
+            Thread.sleep(1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void deletePathNode(){
+        CuratorFramework curatorFramework = zookeeperClientSupplier.getZookeeperClient(HOST, PORT);
+        try {
+            curatorFramework.delete().deletingChildrenIfNeeded().forPath(path);
         } catch (Exception e) {
             e.printStackTrace();
         }

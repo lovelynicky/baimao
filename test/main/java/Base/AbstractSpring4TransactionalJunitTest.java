@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by liluoqi on 16/6/9.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = Context.class)
+//@ContextConfiguration(classes = Context.class)
+@ContextConfiguration(locations = "classpath*:ApplicationContext.xml")
 @TransactionConfiguration(defaultRollback = true)
 @Transactional
 public class AbstractSpring4TransactionalJunitTest {

@@ -1,8 +1,11 @@
 package com.rocky.zookeeper.nodelistener.base;
 
+import com.rocky.utils.EncodeUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
+
+import java.io.UnsupportedEncodingException;
 
 
 /**
@@ -15,7 +18,6 @@ public abstract class AbstractListenZookeeper implements NodeCacheListener{
     private CuratorFramework curatorFramework;
     private String path;
     private boolean isCompressed;
-    private NodeCacheListener nodeCacheListener;
 
     /**
      * 创建即时记录当前值的NodeCache
@@ -34,7 +36,6 @@ public abstract class AbstractListenZookeeper implements NodeCacheListener{
 
     public AbstractListenZookeeper useCustomListener(NodeCacheListener nodeCacheListener) {
         if (nodeCacheListener != null) {
-            this.nodeCacheListener = nodeCacheListener;
             this.nodeCache.getListenable().removeListener(this);
             this.nodeCache.getListenable().addListener(nodeCacheListener);
         }
@@ -49,7 +50,7 @@ public abstract class AbstractListenZookeeper implements NodeCacheListener{
         return this;
     }
 
-    public byte[] getNewestData() {
+    public byte[] getLatestData() {
         try {
             return this.curatorFramework.getData().forPath(getPath());
         } catch (Exception e) {
@@ -58,20 +59,12 @@ public abstract class AbstractListenZookeeper implements NodeCacheListener{
         return null;
     }
 
-    public NodeCache getNodeCache() {
-        return nodeCache;
-    }
-
-    public CuratorFramework getCuratorFramework() {
-        return curatorFramework;
+    public String getLatestDataString() throws UnsupportedEncodingException {
+        return getLatestData()!=null?new String(getLatestData(), EncodeUtils.UTF8):null;
     }
 
     public String getPath() {
         return path;
-    }
-
-    public boolean isCompressed() {
-        return isCompressed;
     }
 
     private void setProperties(CuratorFramework curatorFramework, String path, boolean isCompressed) {

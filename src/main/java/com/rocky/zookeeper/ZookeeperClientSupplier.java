@@ -4,10 +4,12 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by liluoqi on 16/5/28.
  */
+@Component
 public class ZookeeperClientSupplier {
 
     private static final int SESSION_TIMEOUT_MS = 5000;

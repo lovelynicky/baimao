@@ -11,6 +11,6 @@ public class ListenNode extends AbstractListenZookeeper {
     @Override
     public void nodeChanged() throws Exception {
         System.out.println(String.format("path:%s has been updated by data:%s", getPath(),
-                new String(getNewestData(), EncodeUtils.UTF8)));
+                new String(getLatestData(), EncodeUtils.UTF8)));
     }
 }
